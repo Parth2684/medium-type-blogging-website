@@ -1,0 +1,8 @@
+name = "hono-serverless"
+main = "dist/index.js"  # Adjust this based on your entry file
+compatibility_date = "2025-02-04"
+
+# Environment variables
+[vars]
+DATABASE_URL=""
+JWT_SECRET=""

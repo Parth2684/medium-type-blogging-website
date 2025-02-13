@@ -1,3 +1,4 @@
+import { createBlogInput, updateBlogInput } from "@parth_bhosle/medium-common";
 import { PrismaClient } from "@prisma/client/edge";
 import { withAccelerate } from "@prisma/extension-accelerate";
 import { Hono } from "hono";
@@ -17,29 +18,50 @@ export const blogRouter = new Hono<{
 
 
 
+
+
 blogRouter.use('/*', async (c, next) => {
-    const token = c.req.header("Authorization");
+    const header = c.req.header("authorization") || "";
+    console.log("Authorization Header:", header); // Debugging
+    
+    const token = header.split(" ")[1];
     if (!token) {
-        return c.json({ error: "Missing Authorization Token" }, 401);
+        c.status(403);
+        return c.json({ error: "No token provided" });
     }
 
     try {
+        // @ts-ignore
         const response = await verify(token, c.env.JWT_SECRET);
-        if (!response || !response.id) {
-            return c.json({ error: "Invalid Token" }, 401);
+        console.log("Decoded JWT:", response); // Debugging
+        
+        if (response.id) {
+            //@ts-ignore
+            c.set("userId", response.id); // Ensure userId is stored
+            return next();
+        } else {
+            c.status(403);
+            return c.json({ error: "Invalid token" });
         }
-        //@ts-ignore
-        c.set("userId", response.id);
-        await next();
-    } catch (error) {
-        return c.json({ error: "Token Verification Failed", details: error.message }, 401);
+    } catch (err) {
+        console.error("JWT Verification Error:", err);
+        c.status(403);
+        return c.json({ error: "Token verification failed" });
     }
 });
+
+
   
 
 blogRouter.post('/', async (c) => {
     try {
         const body = await c.req.json();
+        const { success } = createBlogInput.safeParse(body);
+        if(!success) {
+            return c.json({
+                msg: "Enter correct details nigga"
+            })
+        }
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL
     }).$extends(withAccelerate())
@@ -69,6 +91,12 @@ blogRouter.post('/', async (c) => {
 blogRouter.put('/', async (c) => {
     try{
         const body = await c.req.json()
+        const { success } = updateBlogInput.safeParse(body);
+        if(!success){
+            return c.json({
+                msg: "enter correct details nigga"
+            })
+        }
     const prisma = new PrismaClient({
         datasourceUrl: c.env.DATABASE_URL
     }).$extends(withAccelerate())
