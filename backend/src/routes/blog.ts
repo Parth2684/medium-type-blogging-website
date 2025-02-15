@@ -21,10 +21,10 @@ export const blogRouter = new Hono<{
 
 
 blogRouter.use('/*', async (c, next) => {
-    const header = c.req.header("authorization") || "";
+    const header = c.req.header("Authorization") || "";
     console.log("Authorization Header:", header); // Debugging
     
-    const token = header.split(" ")[1];
+    const token = header;
     if (!token) {
         c.status(403);
         return c.json({ error: "No token provided" });
@@ -133,6 +133,16 @@ blogRouter.get('/:id', async (c) => {
     const post = await prisma.post.findFirst({
         where: {
             id: postId
+        },
+        select: {
+            id: true,
+            title: true,
+            content: true,
+            author: {
+                select: {
+                    name: true
+                }
+            }
         }
     })
     return c.json({
@@ -154,9 +164,20 @@ blogRouter.get('/bulk', async (c) => {
         const prisma = new PrismaClient({
             datasourceUrl: c.env.DATABASE_URL
         }).$extends(withAccelerate())
-        const blogs = await prisma.post.findMany();
+        const blogs = await prisma.post.findMany({
+            select: {
+                content: true,
+                title: true,
+                id: true,
+                author: {
+                    select: {
+                        name: true
+                    }
+                }
+            }
+        });
         return c.json({
-            blogs,
+            blogs: blogs || [],
             msg: "All the blogs you need"
         })
     }catch(e){

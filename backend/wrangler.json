@@ -5,7 +5,7 @@
   "compatibility_date": "2025-02-03",
   
   "vars": {
-    "DATABASE_URL": "",
-    "JWT_SECRET": ""
+    "DATABASE_URL": "prisma://accelerate.prisma-data.net/?api_key=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlfa2V5IjoiZWQwOTJmYzEtMzE2Ny00ZmQzLTk5NDMtNWQ4ZDhkMTlkZjdlIiwidGVuYW50X2lkIjoiMGIzYjIxMjBlMzU0NzU3ZWNiOWRmZDdiY2Q3Yjk4MjZhNzAwZjJhZmE1OGM5NGFiNGMzNmQ5ZWUwODM2ZGViOCIsImludGVybmFsX3NlY3JldCI6IjhjODcyZWUyLTI1ZmUtNDhmMy1iNzNjLTJiMWUwZGEzOWI0OSJ9.54SyE9TrLm5Y0feLjeDCs99qWoH_vLJGaqAG119mjPk",
+    "JWT_SECRET": "myNigga26"
   }
 }
